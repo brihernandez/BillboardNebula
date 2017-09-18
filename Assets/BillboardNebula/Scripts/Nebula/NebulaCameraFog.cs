@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class NebulaCameraFog : MonoBehaviour
 {
     Camera cam;
+    [Tooltip("Point this to an image that covers an entire screen space canvas. This is required for nebula enter/exit fading effects.")]
     public Image fadeQuad;
 
     [Range(0, 1f)]
@@ -84,15 +85,25 @@ public class NebulaCameraFog : MonoBehaviour
 
         initialFarClip = cam.farClipPlane;
 
-        fadeQuad.material.renderQueue = 3500;
+        if (fadeQuad != null)
+        {
+            fadeQuad.material.renderQueue = 3500;
+        }
+        else
+        {
+            Debug.LogError(name + ": NebulaCameraFog missing assigned Fade Quad! Nebula fog fading will not work correctly!");
+        }
     }
 
     private void OnPreRender()
     {
-        // TODO: Consider re-working this UI canvas based solution. As a safety, the camera
-        // is going to assign this stuff on its own that used to be set manually in the scene.
-        fadeQuad.canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        fadeQuad.canvas.worldCamera = cam;
+        if (fadeQuad != null)
+        {
+            // TODO: Consider re-working this UI canvas based solution. As a safety, the camera
+            // is going to assign this stuff on its own that used to be set manually in the scene.
+            fadeQuad.canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            fadeQuad.canvas.worldCamera = cam;
+        }
     }
 
     void Update()
@@ -124,14 +135,14 @@ public class NebulaCameraFog : MonoBehaviour
             // TODO: Figure out what to do when the raycast misses from a nebula being too far away.
             // Right now, it'll return 0 and then it'll look like you're inside the nebula.
             float distToNebSurface = NebulaUtils.DistanceToNebulaSurface(Camera.main.transform.position, closestNeb, MAX_NEBULA_DIST, nebulaMask);
-            print("nebula distance to surface: " + distToNebSurface);
             if (distToNebSurface > closestNeb.bitRadius / 3f)
             {
                 insideNebula = null;
                 fadingNebula = null;
                 density = 0f;
 
-                fadeQuad.color = Color.clear;
+                if (fadeQuad != null)
+                    fadeQuad.color = Color.clear;
             }
             else if (distToNebSurface > 0f)
             {
@@ -139,18 +150,24 @@ public class NebulaCameraFog : MonoBehaviour
                 fadingNebula = closestNeb;
                 density = 1f - (distToNebSurface / (closestNeb.bitRadius / 3f));
 
-                Color fadeIn = nebulaColor;
-                Color fadeOut = nebulaColor;
-                fadeOut.a = 0f;
-                fadeIn.a = 1f;
-                fadeQuad.color = Color.Lerp(fadeOut, fadeIn, density);                
+                if (fadeQuad != null)
+                {
+                    Color fadeIn = nebulaColor;
+                    Color fadeOut = nebulaColor;
+                    fadeOut.a = 0f;
+                    fadeIn.a = 1f;
+
+                    fadeQuad.color = Color.Lerp(fadeOut, fadeIn, density);
+                }
             }
             else
             {
                 fadingNebula = closestNeb;
-                insideNebula = closestNeb;
-                fadeQuad.color = Color.clear;
+                insideNebula = closestNeb;                
                 density = 1f;
+
+                if (fadeQuad != null)
+                    fadeQuad.color = Color.clear;
             }
 
             // Update all the effects.
