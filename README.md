@@ -10,17 +10,17 @@ This project was built with Unity 5.6.2.
 ## Screenshots
 
 Interior
+
 ![gif](./Screenshots/interior.gif)
 
 Exterior
+
 ![gif](./Screenshots/exterior.gif)
 
 Transition
+
 ![gif](./Screenshots/transition.gif)
 
-![gif](./Screenshots/missile.gif)
-![gif](./Screenshots/delay.gif)
-![gif](./Screenshots/rockets.gif)
 
 ## Notes
 While I did build this with the idea of separating it out separately, it never reached the level of polish required for a proper release.
