@@ -1,0 +1,51 @@
+﻿SPACEPARTICLEQUAD
+
+// First check if they are in the frustum
+refCam.fieldOfView = 80f;
+Plane[] frustum = GeometryUtility.CalculateFrustumPlanes(refCam);
+bool inFrustum = GeometryUtility.TestPlanesAABB(frustum, mesh.bounds);
+refCam.fieldOfView = 60f;
+
+// Frustum method
+if (!inFrustum && distToCam < drawDistance / 2f)
+{
+    visible = true;
+}
+else if (inFrustum && distToCam < drawDistance)
+{
+    visible = true;
+
+    // Fade the particle if it's getting too far.
+    float endFadeOutStart = drawDistance - radius;
+    if (distToCam > endFadeOutStart)
+    {
+        Color col = Color.Lerp(startColor, startColorNoA, (distToCam - endFadeOutStart) / (radius));
+        mat.SetColor("_TintColor", col);
+    }
+
+    // Fade the particle out if it's getting too close.
+    else if (distToCam < farFadeDistance && distToCam > nearFadeDistance)
+    {
+        Color col = Color.Lerp(startColorNoA, startColor, (distToCam - nearFadeDistance) / (farFadeDistance - nearFadeDistance));
+        mat.SetColor("_TintColor", col);
+    }
+
+    // If too close, the fade is zero at this point so it's just not zero.
+    //else if (distToCam < nearFadeDistance)
+    //visible = false;
+}
+
+NEBULAPUFFS
+
+// Frustum method
+
+// Random distance from the near clip plane, plus a grace based on radius, to the particle draw distance.
+pos.z = Random.Range(Mathf.Lerp(farFadeDistance, maxDistance, 0.5f), maxDistance);
+//pos.z = maxDistance * 0.9f;
+
+// Random x/y point in front of the camera at a specific distance.
+float frustumHeight = 2.0f * pos.z * Mathf.Tan(refCam.fieldOfView * 0.5f * Mathf.Deg2Rad);
+float frustumWidth = frustumHeight * refCam.aspect;
+
+pos.x = Random.Range(-frustumWidth / 2f, frustumWidth / 2f);
+pos.y = Random.Range(-frustumHeight / 2f, frustumHeight / 2f);
