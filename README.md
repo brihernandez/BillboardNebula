@@ -23,6 +23,8 @@ Transition
 
 
 ## Notes
-While I did build this with the idea of separating it out separately, it never reached the level of polish required for a proper release.
+While I did build this with the idea of eventually separating it out, it never reached the level of polish required for a proper release.
 
 There's a few TODOs in the code from parts that I quickly hacked together to make this work separate from its source project. The scene included shows how everything has to be set up, but it's not completely clear. I'll try and update this readme with more information. I'd also like to eventually come back to this and clean it up a bit to make it more user friendly.
+
+There is an issue with fog rendering when built. When inside nebula, if you don't see fog shading being applied correctly, in Unity's graphics settings, set "Fog modes" under "Shader stripping" to Custom.
